@@ -1,0 +1,63 @@
+name: CI
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to deploy to
+        required: true
+        type: choice
+        options:
+          - dev
+          - uat
+          - prod
+  # pull_request:
+    # branches:
+      # - dev
+      # - main
+    # types:
+      # - opened
+      # - closed
+      # - reopened
+      # - synchronize
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+  PR_PATH: /pr/${{ github.event.pull_request.number }}
+
+jobs:
+  lint:
+    if: |
+      github.event_name != 'pull_request' ||
+      github.event.action != 'closed' ||
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+      - run: npm ci
+      - name: Run linter
+        run: npm run lint
+
+  test:
+    if: |
+      github.event_name != 'pull_request' ||
+      github.event.action != 'closed' ||
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+      - run: npm ci
+      - name: Run tests
+        run: npm run test
+        
