@@ -7,7 +7,7 @@ on:
         required: true
         type: choice
         options:
-          - setup node.js
+          - node
           - lint
           - test
       logLevel:
@@ -40,9 +40,10 @@ jobs:
   lint:
     if: |
       github.event_name != 'pull_request' ||
-      github.event.action != 'closed' ||
-      github.event.pull_request.merged == true ||
-      github.event.inputs.environment == 'lint'
+      # github.event.action != 'closed' ||
+      # github.event.pull_request.merged == true ||
+      github.event.inputs.environment == 'lint' ||
+      github.event.inputs.environment == 'node'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
