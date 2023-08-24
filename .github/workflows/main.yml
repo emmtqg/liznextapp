@@ -43,14 +43,18 @@ jobs:
       github.event.inputs.environment == 'node'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'package.json'
-          cache: 'npm'
-      - run: npm ci
-      - name: Run linter
-        run: npm run lint
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Get NodeJS Version from package.json
+      run: |
+        echo "$(cat ./package.json)" | jq .engines.node | xargs -I {} echo "NodeVersion="{} >> $GITHUB_ENV
+    - name: Use Node.js ${{ env.NodeVersion }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ env.NodeVersion }}
+    - run: npm ci
+    - name: Run linter
+      run: npm run lint
 
   test:
     if: |
