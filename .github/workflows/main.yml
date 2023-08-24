@@ -44,7 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
     - name: Get NodeJS Version from package.json
       run: |
         echo "$(cat ./package.json)" | jq .engines.node | xargs -I {} echo "NodeVersion="{} >> $GITHUB_ENV
