@@ -25,7 +25,7 @@ on:
         type: boolean
       tags:
         description: 'Test scenario tags'
-        required: true
+        required: false
         type: string
 
 concurrency:
