@@ -27,6 +27,10 @@ on:
         description: 'Test scenario tags'
         required: false
         type: string
+        
+  pull_request:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.ref }}
