@@ -3,22 +3,30 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: Environment to deploy to
+        description: Job to dispatch
         required: true
         type: choice
         options:
-          - dev
-          - uat
-          - prod
-  # pull_request:
-    # branches:
-      # - dev
-      # - main
-    # types:
-      # - opened
-      # - closed
-      # - reopened
-      # - synchronize
+          - setup node.js
+          - lint
+          - test
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+      print_tags:
+        description: 'True to print to STDOUT'
+        required: true
+        type: boolean
+      tags:
+        description: 'Test scenario tags'
+        required: true
+        type: string
 
 concurrency:
   group: ${{ github.ref }}
@@ -33,7 +41,8 @@ jobs:
     if: |
       github.event_name != 'pull_request' ||
       github.event.action != 'closed' ||
-      github.event.pull_request.merged == true
+      github.event.pull_request.merged == true ||
+      inputs.environment == 'lint'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -50,12 +59,13 @@ jobs:
       github.event_name != 'pull_request' ||
       github.event.action != 'closed' ||
       github.event.pull_request.merged == true
+      inputs.environment == 'test'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '^16.13.1'
+          node-version-file: ''
           cache: 'npm'
       - run: npm ci
       - name: Run tests
