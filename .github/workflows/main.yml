@@ -27,10 +27,6 @@ on:
         description: 'Test scenario tags'
         required: false
         type: string
-        
-  pull_request:
-    branches:
-      - main
       
 concurrency:
   group: ${{ github.ref }}
@@ -52,6 +48,7 @@ jobs:
         with:
           node-version-file: 'package.json'
           cache: 'npm'
+      - run: npm ci
       - name: Run linter
         run: npm run lint
 
